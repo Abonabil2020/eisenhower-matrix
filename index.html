@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مصفوفة أيزنهاور — إدارة المهام</title>
+<title>معاينة مصفوفة أيزنهاور — الأرباع الأربعة</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -11,445 +11,193 @@
     --q1:#e63946;--q1-light:#fff0f1;--q1-mid:#ffd6d8;--q1-dark:#b02030;
     --q2:#2a9d8f;--q2-light:#edfaf8;--q2-mid:#b2ebe5;--q2-dark:#1a6b61;
     --q3:#f4a261;--q3-light:#fff6ed;--q3-mid:#fde0c4;--q3-dark:#b86a2a;
-    --q4:#adb5bd;--q4-light:#f8f9fa;--q4-mid:#dee2e6;--q4-dark:#6c757d;
-    --bg:#f0f2f5;--surface:#ffffff;--text:#1a1a2e;--text-muted:#6c757d;
-    --border:#e0e4ea;--radius:14px;
-    --shadow:0 2px 12px rgba(0,0,0,.07);--shadow-lg:0 8px 32px rgba(0,0,0,.12);
+    --q4:#8d99ae;--q4-light:#f8f9fa;--q4-mid:#dee2e6;--q4-dark:#4a5568;
+    --bg:#f4f6f9;--surface:#ffffff;--text:#1e293b;--text-muted:#64748b;
+    --border:#e2e8f0;--radius:16px;
+    --shadow-sm:0 2px 8px rgba(0,0,0,.04);
+    --shadow:0 4px 20px rgba(0,0,0,.06);
+    --shadow-lg:0 12px 32px rgba(0,0,0,.12);
     font-family:'IBM Plex Sans Arabic',sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--bg);color:var(--text);min-height:100vh;font-family:'IBM Plex Sans Arabic',sans-serif;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans Arabic',sans-serif;padding-bottom:40px;}
 
-  /* Loading */
-  #loadingOverlay{position:fixed;inset:0;background:#fff;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
-  .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--q2);border-radius:50%;animation:spin .7s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  #loadingOverlay p{font-size:15px;color:var(--text-muted);}
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--q1),var(--q3));display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(230,57,70,0.3);}
+  .logo-text{font-size:19px;font-weight:700;}
+  .logo-sub{font-size:12px;color:var(--text-muted);}
+  
+  .header-right{display:flex;align-items:center;gap:20px;}
+  .progress-wrap{display:flex;flex-direction:column;gap:4px;width:140px;}
+  .progress-label{display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--text-muted);}
+  .progress-bar-bg{height:6px;background:var(--border);border-radius:10px;overflow:hidden;}
+  .progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--q2),#48bb78);width:25%;}
 
-  /* Sync Banner */
-  #syncBanner{padding:8px 20px;text-align:center;font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;background:#fff8e1;border-bottom:1px solid #ffe082;color:#7d5a00;}
-  #syncBanner.synced{background:#e8f5e9;border-color:#a5d6a7;color:#1b5e20;}
-  #syncBanner.error{background:#ffebee;border-color:#ef9a9a;color:#b71c1c;}
-  .sync-dot{width:8px;height:8px;border-radius:50%;background:#ffc107;animation:blink 1s infinite;}
-  .sync-dot.synced{background:#4caf50;animation:none;}
-  .sync-dot.error{background:#f44336;animation:none;}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-
-  /* Header */
-  header{background:var(--surface);border-bottom:1px solid var(--border);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
-  .logo{display:flex;align-items:center;gap:10px;}
-  .logo-icon{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--q1),var(--q3));display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700;}
-  .logo-text{font-size:18px;font-weight:700;}
-  .logo-sub{font-size:12px;color:var(--text-muted);margin-top:1px;}
-  .header-stats{display:flex;gap:12px;}
-  .stat-pill{background:var(--bg);border-radius:20px;padding:6px 14px;font-size:13px;color:var(--text-muted);font-weight:500;}
+  .header-stats{display:flex;gap:8px;}
+  .stat-pill{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;color:var(--text-muted);font-weight:500;}
   .stat-pill span{color:var(--text);font-weight:700;}
 
-  /* Input */
-  .input-section{background:var(--surface);border-radius:var(--radius);padding:24px;margin-bottom:28px;box-shadow:var(--shadow);border:1px solid var(--border);}
-  .input-section h2{font-size:15px;font-weight:600;color:var(--text-muted);margin-bottom:14px;}
-  .input-row{display:flex;gap:10px;flex-wrap:wrap;}
-  .task-input{flex:1;min-width:200px;border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;font-size:15px;font-family:inherit;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s;}
-  .task-input:focus{border-color:var(--q2);background:#fff;}
-  .task-input::placeholder{color:var(--text-muted);}
-  .quadrant-select{border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;font-family:inherit;color:var(--text);background:var(--bg);outline:none;cursor:pointer;min-width:180px;}
-  .add-btn{background:var(--q2);color:#fff;border:none;border-radius:10px;padding:12px 22px;font-size:15px;font-family:inherit;font-weight:600;cursor:pointer;transition:background .2s,transform .1s;white-space:nowrap;}
-  .add-btn:hover{background:var(--q2-dark);}
-  .add-btn:active{transform:scale(.97);}
-
-  /* Scheduled */
-  .scheduled-section{background:var(--surface);border-radius:var(--radius);padding:20px 24px;margin-bottom:28px;box-shadow:var(--shadow);border:1.5px solid #c7e6f5;display:none;}
-  .scheduled-section.has-tasks{display:block;}
-  .scheduled-title{font-size:15px;font-weight:700;color:#0077b6;margin-bottom:14px;}
-  .scheduled-grid{display:flex;flex-wrap:wrap;gap:10px;}
-  .scheduled-chip{background:#e8f4fd;border:1px solid #b6d9f5;border-radius:10px;padding:8px 14px;font-size:13px;display:flex;align-items:center;gap:10px;}
-  .scheduled-chip.urgent-soon{background:#fff3cd;border-color:#ffc107;animation:pulse-warn 2s infinite;}
-  @keyframes pulse-warn{0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.4)}50%{box-shadow:0 0 0 6px rgba(255,193,7,0)}}
-  .chip-name{font-weight:600;color:var(--text);}
-  .chip-time{color:#0077b6;font-size:12px;}
-  .chip-badge{background:#ffc107;color:#7d5a00;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;}
-
-  /* Matrix */
-  .axis-label{display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-muted);font-weight:600;margin-bottom:8px;gap:6px;}
-  .matrix-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-  .quadrant{background:var(--surface);border-radius:var(--radius);border:1.5px solid var(--border);box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:320px;transition:box-shadow .2s;overflow:hidden;}
-  .quadrant:hover{box-shadow:var(--shadow-lg);}
-  .quadrant.drag-over{outline:2.5px dashed var(--q2);outline-offset:-3px;}
-  .quadrant-header{padding:14px 18px 12px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;}
-  .q-icon{font-size:22px;margin-bottom:4px;}
-  .q-title{font-size:15px;font-weight:700;}
+  .matrix-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .quadrant{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);display:flex;flex-direction:column;position:relative;overflow:hidden;}
+  .quadrant::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+  .quadrant.q1::before{background:var(--q1);}
+  .quadrant.q2::before{background:var(--q2);}
+  .quadrant.q3::before{background:var(--q3);}
+  .quadrant.q4::before{background:var(--q4);}
+  
+  .quadrant-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;background:#fafbfc;}
+  .q-title-wrap{display:flex;align-items:center;gap:8px;}
+  .q-title{font-size:16px;font-weight:700;}
   .q-subtitle{font-size:12px;color:var(--text-muted);margin-top:2px;}
-  .q-count{background:var(--bg);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700;color:var(--text-muted);}
-  .q1 .quadrant-header{background:var(--q1-light);border-bottom-color:var(--q1-mid);}
-  .q1 .q-title{color:var(--q1-dark);}.q1 .q-count{background:var(--q1-mid);color:var(--q1-dark);}
-  .q2 .quadrant-header{background:var(--q2-light);border-bottom-color:var(--q2-mid);}
-  .q2 .q-title{color:var(--q2-dark);}.q2 .q-count{background:var(--q2-mid);color:var(--q2-dark);}
-  .q3 .quadrant-header{background:var(--q3-light);border-bottom-color:var(--q3-mid);}
-  .q3 .q-title{color:var(--q3-dark);}.q3 .q-count{background:var(--q3-mid);color:var(--q3-dark);}
-  .q4 .quadrant-header{background:var(--q4-light);border-bottom-color:var(--q4-mid);}
-  .q4 .q-title{color:var(--q4-dark);}.q4 .q-count{background:var(--q4-mid);color:var(--q4-dark);}
-  .quadrant-body{padding:12px;flex:1;overflow-y:auto;}
-  .empty-state{text-align:center;color:var(--text-muted);font-size:13px;padding:32px 16px;opacity:.6;user-select:none;}
-  .empty-state .emoji{font-size:28px;margin-bottom:8px;}
+  .q-count{background:var(--bg);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;color:var(--text-muted);border:1px solid var(--border);}
+  
+  .q1 .q-title{color:var(--q1-dark);}.q1 .q-count{background:var(--q1-light);color:var(--q1-dark);border-color:var(--q1-mid);}
+  .q2 .q-title{color:var(--q2-dark);}.q2 .q-count{background:var(--q2-light);color:var(--q2-dark);border-color:var(--q2-mid);}
+  .q3 .q-title{color:var(--q3-dark);}.q3 .q-count{background:var(--q3-light);color:var(--q3-dark);border-color:var(--q3-mid);}
+  .q4 .q-title{color:var(--q4-dark);}.q4 .q-count{background:var(--q4-light);color:var(--q4-dark);border-color:var(--q4-mid);}
 
-  /* Task Card */
-  .task-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:grab;transition:box-shadow .15s,transform .15s,opacity .15s;}
-  .task-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);}
-  .task-card.dragging{opacity:.4;transform:scale(.97);cursor:grabbing;}
-  .task-card.done{background:#f8fff8;border-color:#c8e6c9;}
-  .task-card.done .task-name{text-decoration:line-through;color:#aaa;}
-  .task-top{display:flex;align-items:flex-start;gap:8px;}
-  .done-btn{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);background:transparent;cursor:pointer;flex-shrink:0;margin-top:1px;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:11px;}
-  .done-btn:hover{border-color:#4caf50;}
+  .quadrant-body{padding:14px;flex:1;max-height:280px;min-height:220px;overflow-y:auto;}
+  .quadrant-body::-webkit-scrollbar{width:6px;}
+  .quadrant-body::-webkit-scrollbar-track{background:transparent;}
+  .quadrant-body::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px;}
+
+  .task-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px;box-shadow:var(--shadow-sm);transition:all .2s ease;}
+  .task-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.08);transform:translateY(-1px);}
+  .task-card.done{background:#f8fafc;}
+  .task-card.done .task-name{text-decoration:line-through;color:#94a3b8;}
+  .task-top{display:flex;align-items:center;gap:10px;}
+  .drag-handle{color:#cbd5e1;font-size:14px;user-select:none;}
+  .done-btn{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;font-size:12px;}
   .task-card.done .done-btn{background:#4caf50;border-color:#4caf50;color:#fff;}
   .task-name-wrap{flex:1;}
-  .task-name{font-size:14px;font-weight:500;color:var(--text);line-height:1.4;word-break:break-word;}
-  .task-name-input{font-size:14px;font-weight:500;border:1.5px solid var(--q2);border-radius:6px;padding:3px 8px;font-family:inherit;color:var(--text);width:100%;outline:none;background:#fff;display:none;}
-  .task-actions{display:flex;gap:4px;flex-shrink:0;}
-  .task-btn{background:transparent;border:none;cursor:pointer;padding:4px;border-radius:6px;font-size:14px;color:var(--text-muted);transition:background .15s,color .15s;line-height:1;}
-  .task-btn:hover{background:var(--bg);color:var(--text);}
-  .task-btn.delete:hover{background:#ffe5e5;color:var(--q1);}
-  .task-meta{margin-top:8px;}
-  .task-date-display{display:flex;align-items:center;gap:6px;font-size:12px;color:#0077b6;margin-bottom:6px;}
-  .task-date-display.urgent{color:#e67e22;font-weight:600;}
-  .task-date-display.overdue{color:var(--q1);font-weight:600;}
-  .date-form{display:none;margin-top:8px;border-top:1px solid var(--border);padding-top:8px;}
-  .date-form.open{display:block;}
-  .date-row{display:flex;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
-  .date-row label{font-size:11px;color:var(--text-muted);display:block;margin-bottom:3px;}
-  .date-row input{border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;}
-  .date-row input:focus{border-color:var(--q2);background:#fff;}
-  .date-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
-  .cal-btn{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:12px;font-family:inherit;color:#0077b6;cursor:pointer;text-decoration:none;font-weight:500;transition:background .15s;}
-  .cal-btn:hover{background:#e8f4fd;border-color:#b6d9f5;}
-  .cal-btn.ics{color:#555;}
-  .save-date-btn{background:var(--q2);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:12px;font-family:inherit;font-weight:600;cursor:pointer;}
-  .save-date-btn:hover{background:var(--q2-dark);}
-  .move-wrap{margin-top:6px;display:none;}
-  .move-wrap.open{display:flex;align-items:center;gap:6px;}
-  .move-select{border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;font-family:inherit;background:var(--bg);color:var(--text);outline:none;flex:1;}
+  .task-name{font-size:14px;font-weight:500;}
+  .task-actions{display:flex;gap:4px;}
+  .task-btn{background:transparent;border:none;padding:4px;font-size:13px;color:var(--text-muted);}
 
-  /* Toast */
-  .toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
-  .toast{background:#1a1a2e;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideUp .25s ease;white-space:nowrap;}
-  @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-
-  @media(max-width:700px){
-    header{padding:12px 16px;}.header-stats{display:none;}
-    main{padding:14px 12px;}.matrix-grid{grid-template-columns:1fr;}
-    .input-row{flex-direction:column;}.quadrant-select,.add-btn{width:100%;}
+  @media(max-width:768px){
+    header{padding:12px 16px;}.progress-wrap{display:none;}
+    .matrix-grid{grid-template-columns:1fr;}
   }
 </style>
 </head>
 <body>
-
-<div id="loadingOverlay">
-  <div class="spinner"></div>
-  <p>جاري الاتصال بالسحابة... ☁️</p>
-</div>
-
-<div id="syncBanner">
-  <div class="sync-dot" id="syncDot"></div>
-  <span id="syncText">جاري الاتصال...</span>
-</div>
 
 <header>
   <div class="logo">
     <div class="logo-icon">م</div>
     <div>
       <div class="logo-text">مصفوفة أيزنهاور</div>
-      <div class="logo-sub">مزامنة فورية على كل أجهزتك ☁️</div>
+      <div class="logo-sub">إدارة وتحديد أولويات المهام ☁️</div>
     </div>
   </div>
-  <div class="header-stats">
-    <div class="stat-pill">الكل: <span id="stat-total">0</span></div>
-    <div class="stat-pill">✅ <span id="stat-done">0</span></div>
-    <div class="stat-pill">⏳ <span id="stat-pending">0</span></div>
+  
+  <div class="header-right">
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>نسبة الإنجاز</span>
+        <span>25%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill"></div>
+      </div>
+    </div>
+    
+    <div class="header-stats">
+      <div class="stat-pill">الكل: <span>4</span></div>
+      <div class="stat-pill">✅ <span>1</span></div>
+      <div class="stat-pill">⏳ <span>3</span></div>
+    </div>
   </div>
 </header>
 
-<main style="max-width:1400px;margin:0 auto;padding:24px 20px;">
-  <div class="input-section">
-    <h2>✏️ أضف مهمة جديدة</h2>
-    <div class="input-row">
-      <input class="task-input" id="taskInput" type="text" placeholder="اكتب اسم المهمة هنا..." autocomplete="off">
-      <select class="quadrant-select" id="quadrantSelect">
-        <option value="q1">🔴 مهم وعاجل</option>
-        <option value="q2" selected>🟢 مهم وغير عاجل</option>
-        <option value="q3">🟡 غير مهم وعاجل</option>
-        <option value="q4">⚪ غير مهم وغير عاجل</option>
-      </select>
-      <button class="add-btn" id="addBtn">+ إضافة</button>
-    </div>
-  </div>
-
-  <div class="scheduled-section" id="scheduledSection">
-    <div class="scheduled-title">📅 المهام المجدولة</div>
-    <div class="scheduled-grid" id="scheduledGrid"></div>
-  </div>
-
-  <div class="axis-label">⬆️ مهم &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; غير مهم ⬇️</div>
+<main style="max-width:1200px;margin:20px auto;padding:0 16px;">
   <div class="matrix-grid">
-    <div class="quadrant q1" id="q1" ondragover="ev.onDragOver(event,'q1')" ondragleave="ev.onDragLeave(event,'q1')" ondrop="ev.onDrop(event,'q1')">
-      <div class="quadrant-header"><div><div class="q-icon">🔴</div><div class="q-title">مهم وعاجل</div><div class="q-subtitle">افعلها الآن</div></div><div class="q-count" id="count-q1">0</div></div>
-      <div class="quadrant-body" id="body-q1"></div>
+    <!-- الربع الأول -->
+    <div class="quadrant q1">
+      <div class="quadrant-header">
+        <div>
+          <div class="q-title-wrap"><span class="q-icon">🔴</span><span class="q-title">مهم وعاجل</span></div>
+          <div class="q-subtitle">افعلها الآن وبنفسك</div>
+        </div>
+        <div class="q-count">1</div>
+      </div>
+      <div class="quadrant-body">
+        <div class="task-card">
+          <div class="task-top">
+            <span class="drag-handle">⠿</span>
+            <div class="done-btn"></div>
+            <div class="task-name-wrap"><div class="task-name">إنهاء تقرير المبيعات العاجل</div></div>
+            <div class="task-actions"><span class="task-btn">✏️</span><span class="task-btn">🗑️</span></div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="quadrant q2" id="q2" ondragover="ev.onDragOver(event,'q2')" ondragleave="ev.onDragLeave(event,'q2')" ondrop="ev.onDrop(event,'q2')">
-      <div class="quadrant-header"><div><div class="q-icon">🟢</div><div class="q-title">مهم وغير عاجل</div><div class="q-subtitle">جدولها واهتم بها</div></div><div class="q-count" id="count-q2">0</div></div>
-      <div class="quadrant-body" id="body-q2"></div>
+
+    <!-- الربع الثاني -->
+    <div class="quadrant q2">
+      <div class="quadrant-header">
+        <div>
+          <div class="q-title-wrap"><span class="q-icon">🟢</span><span class="q-title">مهم وغير عاجل</span></div>
+          <div class="q-subtitle">جدولها واهتم بها بتركيز</div>
+        </div>
+        <div class="q-count">1</div>
+      </div>
+      <div class="quadrant-body">
+        <div class="task-card">
+          <div class="task-top">
+            <span class="drag-handle">⠿</span>
+            <div class="done-btn"></div>
+            <div class="task-name-wrap"><div class="task-name">التخطيط لمشروع الشهر القادم</div></div>
+            <div class="task-actions"><span class="task-btn">✏️</span><span class="task-btn">🗑️</span></div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="quadrant q3" id="q3" ondragover="ev.onDragOver(event,'q3')" ondragleave="ev.onDragLeave(event,'q3')" ondrop="ev.onDrop(event,'q3')">
-      <div class="quadrant-header"><div><div class="q-icon">🟡</div><div class="q-title">غير مهم وعاجل</div><div class="q-subtitle">فوّضها لغيرك</div></div><div class="q-count" id="count-q3">0</div></div>
-      <div class="quadrant-body" id="body-q3"></div>
+
+    <!-- الربع الثالث -->
+    <div class="quadrant q3">
+      <div class="quadrant-header">
+        <div>
+          <div class="q-title-wrap"><span class="q-icon">🟡</span><span class="q-title">غير مهم وعاجل</span></div>
+          <div class="q-subtitle">فوّضها لشخص آخر</div>
+        </div>
+        <div class="q-count">1</div>
+      </div>
+      <div class="quadrant-body">
+        <div class="task-card">
+          <div class="task-top">
+            <span class="drag-handle">⠿</span>
+            <div class="done-btn"></div>
+            <div class="task-name-wrap"><div class="task-name">الرد على مكالمة استفسار اعتيادية</div></div>
+            <div class="task-actions"><span class="task-btn">✏️</span><span class="task-btn">🗑️</span></div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="quadrant q4" id="q4" ondragover="ev.onDragOver(event,'q4')" ondragleave="ev.onDragLeave(event,'q4')" ondrop="ev.onDrop(event,'q4')">
-      <div class="quadrant-header"><div><div class="q-icon">⚪</div><div class="q-title">غير مهم وغير عاجل</div><div class="q-subtitle">احذفها أو أرجئها</div></div><div class="q-count" id="count-q4">0</div></div>
-      <div class="quadrant-body" id="body-q4"></div>
+
+    <!-- الربع الرابع -->
+    <div class="quadrant q4">
+      <div class="quadrant-header">
+        <div>
+          <div class="q-title-wrap"><span class="q-icon">⚪</span><span class="q-title">غير مهم وغير عاجل</span></div>
+          <div class="q-subtitle">احذفها أو أرجئها</div>
+        </div>
+        <div class="q-count">1</div>
+      </div>
+      <div class="quadrant-body">
+        <div class="task-card done">
+          <div class="task-top">
+            <span class="drag-handle">⠿</span>
+            <div class="done-btn">✓</div>
+            <div class="task-name-wrap"><div class="task-name">تصفح مواقع التواصل دون هدف</div></div>
+            <div class="task-actions"><span class="task-btn">✏️</span><span class="task-btn">🗑️</span></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </main>
 
-<div class="toast-container" id="toastContainer"></div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getFirestore, collection, onSnapshot,
-  addDoc, updateDoc, deleteDoc, doc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// ── Firebase Init (المشروع الرئيسي الشغال: medical-dashboard) ─────────
-const app = initializeApp({
-  apiKey: "AIzaSyCgh_WS2gwTJDoXuhYvLIyebRVtnutzbew",
-  authDomain: "medical-dashboard-3b42e.firebaseapp.com",
-  projectId: "medical-dashboard-3b42e",
-  storageBucket: "medical-dashboard-3b42e.appspot.com",
-  messagingSenderId: "929629061748",
-  appId: "1:929629061748:web:fe724427edf47b6fd88721"
-});
-
-const db  = getFirestore(app);
-// تم تخصيص اسم المجلد لـ eisenhower_tasks لعدم التداخل مع جدول المهام المشترك
-const col = collection(db, "eisenhower_tasks");
-
-// ── State ─────────────────────────────────────────────────────
-let tasks  = [];
-let dragId = null;
-const QLABELS = {q1:'مهم وعاجل',q2:'مهم وغير عاجل',q3:'غير مهم وعاجل',q4:'غير مهم وغير عاجل'};
-
-// ── Sync banner ───────────────────────────────────────────────
-function setSyncStatus(status, text) {
-  const b = document.getElementById('syncBanner');
-  const d = document.getElementById('syncDot');
-  b.className = status;
-  d.className = 'sync-dot ' + status;
-  document.getElementById('syncText').textContent = text;
-}
-
-// ── Live listener ─────────────────────────────────────────────
-onSnapshot(col, snap => {
-  tasks = snap.docs.map(d => ({id: d.id, ...d.data()}));
-  document.getElementById('loadingOverlay').style.display = 'none';
-  setSyncStatus('synced', '✅ متزامن — أي تغيير يظهر فوراً على كل أجهزتك');
-  render();
-}, err => {
-  console.error(err);
-  document.getElementById('loadingOverlay').style.display = 'none';
-  setSyncStatus('error', '❌ تعذّر الاتصال — تحقق من إعدادات قاعدة البيانات');
-});
-
-// ── Helpers ───────────────────────────────────────────────────
-function escHtml(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function toGCal(dt) {
-  return new Date(dt).toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
-}
-function fmtDT(dt) {
-  if (!dt) return '';
-  return new Date(dt).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'});
-}
-function timeStatus(start) {
-  if (!start) return null;
-  const diff = new Date(start).getTime() - Date.now();
-  if (diff < 0) return 'overdue';
-  if (diff < 86400000) return 'urgent';
-  return 'ok';
-}
-async function patch(id, data) {
-  setSyncStatus('','⏳ جاري الحفظ...');
-  await updateDoc(doc(db,'eisenhower_tasks',id), data);
-}
-function showToast(msg) {
-  const c = document.getElementById('toastContainer');
-  const t = document.createElement('div');
-  t.className = 'toast'; t.textContent = msg;
-  c.appendChild(t);
-  setTimeout(() => t.remove(), 2800);
-}
-
-// ── Actions exposed globally (called from inline HTML) ────────
-const A = window._A = {
-  async addTask() {
-    const inp  = document.getElementById('taskInput');
-    const name = inp.value.trim();
-    if (!name) { inp.focus(); return; }
-    const q = document.getElementById('quadrantSelect').value;
-    await addDoc(col, {name, quadrant:q, done:false, start:'', end:'', createdAt: serverTimestamp()});
-    inp.value = ''; inp.focus();
-    showToast('✅ تمت إضافة المهمة');
-  },
-  toggleDone(id) {
-    const t = tasks.find(x=>x.id===id);
-    if (t) patch(id, {done: !t.done});
-  },
-  async deleteTask(id) {
-    await deleteDoc(doc(db,'eisenhower_tasks',id));
-    showToast('🗑️ تم حذف المهمة');
-  },
-  startEdit(id) {
-    document.getElementById('name-'+id).style.display = 'none';
-    const inp = document.getElementById('nameinput-'+id);
-    inp.style.display = 'block';
-    inp.value = tasks.find(x=>x.id===id)?.name||'';
-    inp.focus(); inp.select();
-  },
-  saveEdit(id, val) {
-    if (val.trim()) patch(id, {name: val.trim()});
-    else render();
-  },
-  cancelEdit(id) {
-    document.getElementById('nameinput-'+id).style.display='none';
-    document.getElementById('name-'+id).style.display='';
-  },
-  toggleDateForm(id) { document.getElementById('dateform-'+id).classList.toggle('open'); },
-  saveDates(id) {
-    const s = document.getElementById('start-'+id).value;
-    const e = document.getElementById('end-'+id).value;
-    patch(id, {start:s, end:e});
-    showToast('📅 تم حفظ الموعد');
-  },
-  clearDates(id) { patch(id, {start:'',end:''}); showToast('📅 تم حذف الموعد'); },
-  toggleMove(id) { document.getElementById('movewrap-'+id).classList.toggle('open'); },
-  moveTask(id, q) {
-    if (!q) return;
-    patch(id, {quadrant:q});
-    showToast('🔄 تم النقل إلى ' + QLABELS[q]);
-  },
-  gcalLink(id) {
-    const t = tasks.find(x=>x.id===id);
-    if (!t||!t.start) return '#';
-    const s = toGCal(t.start);
-    const e = t.end ? toGCal(t.end) : toGCal(new Date(new Date(t.start).getTime()+3600000));
-    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(t.name)}&dates=${s}/${e}`;
-  },
-  downloadICS(id) {
-    const t = tasks.find(x=>x.id===id);
-    if (!t?.start) return;
-    const s   = toGCal(t.start);
-    const e   = t.end ? toGCal(t.end) : toGCal(new Date(new Date(t.start).getTime()+3600000));
-    const now = toGCal(new Date().toISOString());
-    const ics = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Eisenhower//AR\r\nBEGIN:VEVENT\r\nUID:${t.id}@eisenhower\r\nDTSTAMP:${now}\r\nDTSTART:${s}\r\nDTEND:${e}\r\nSUMMARY:${t.name}\r\nDESCRIPTION:${QLABELS[t.quadrant]}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));
-    a.download = t.name.replace(/\s+/g,'_')+'.ics';
-    a.click();
-    showToast('📥 تم تحميل .ics');
-  }
-};
-
-// ── Drag & Drop ───────────────────────────────────────────────
-window.ev = {
-  onDragStart(e,id) { dragId=id; setTimeout(()=>document.getElementById('card-'+id)?.classList.add('dragging'),0); },
-  onDragEnd(id) { document.getElementById('card-'+id)?.classList.remove('dragging'); dragId=null; },
-  onDragOver(e,q) { e.preventDefault(); document.getElementById(q).classList.add('drag-over'); },
-  onDragLeave(e,q) { document.getElementById(q).classList.remove('drag-over'); },
-  onDrop(e,q) { e.preventDefault(); document.getElementById(q).classList.remove('drag-over'); if(dragId) A.moveTask(dragId,q); }
-};
-
-// ── Button bindings ───────────────────────────────────────────
-document.getElementById('addBtn').onclick = () => A.addTask();
-document.getElementById('taskInput').addEventListener('keydown', e => { if(e.key==='Enter') A.addTask(); });
-
-// ── Render ────────────────────────────────────────────────────
-function render() {
-  ['q1','q2','q3','q4'].forEach(q => {
-    const body   = document.getElementById('body-'+q);
-    const count  = document.getElementById('count-'+q);
-    const qt = tasks.filter(t=>t.quadrant===q);
-    count.textContent = qt.length;
-    if (!qt.length) { body.innerHTML=`<div class="empty-state"><div class="emoji">📭</div>لا توجد مهام هنا</div>`; return; }
-
-    body.innerHTML = qt.map(t => {
-      const st      = timeStatus(t.start);
-      const hasDate = !!t.start;
-      const dateCls = st==='overdue'?'overdue':st==='urgent'?'urgent':'';
-      const dateIcon= st==='overdue'?'⚠️':st==='urgent'?'⏰':'📅';
-      const dateHtml= hasDate?`<div class="task-date-display ${dateCls}">${dateIcon} ${fmtDT(t.start)}${t.end?' — '+fmtDT(t.end):''}</div>`:'';
-      const calBtns = hasDate?`<a class="cal-btn" href="${A.gcalLink(t.id)}" target="_blank" rel="noopener">📆 Google Calendar</a><button class="cal-btn ics" onclick="_A.downloadICS('${t.id}')">📥 .ics</button>`:'';
-      const clearBtn= hasDate?`<button class="cal-btn" onclick="_A.clearDates('${t.id}')">✖ حذف الموعد</button>`:'';
-      const otherQs = Object.entries(QLABELS).filter(([k])=>k!==t.quadrant).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
-
-      return `
-<div class="task-card ${t.done?'done':''}" id="card-${t.id}" draggable="true"
-     ondragstart="ev.onDragStart(event,'${t.id}')" ondragend="ev.onDragEnd('${t.id}')">
-  <div class="task-top">
-    <button class="done-btn" onclick="_A.toggleDone('${t.id}')">${t.done?'✓':''}</button>
-    <div class="task-name-wrap">
-      <div class="task-name" id="name-${t.id}">${escHtml(t.name)}</div>
-      <input class="task-name-input" id="nameinput-${t.id}"
-        onblur="_A.saveEdit('${t.id}',this.value)"
-        onkeydown="if(event.key==='Enter')this.blur();if(event.key==='Escape')_A.cancelEdit('${t.id}')">
-    </div>
-    <div class="task-actions">
-      <button class="task-btn" onclick="_A.startEdit('${t.id}')" title="تعديل">✏️</button>
-      <button class="task-btn" onclick="_A.toggleDateForm('${t.id}')" title="موعد">📅</button>
-      <button class="task-btn" onclick="_A.toggleMove('${t.id}')" title="نقل">🔄</button>
-      <button class="task-btn delete" onclick="_A.deleteTask('${t.id}')" title="حذف">🗑️</button>
-    </div>
-  </div>
-  <div class="task-meta">
-    ${dateHtml}
-    <div class="date-form" id="dateform-${t.id}">
-      <div class="date-row">
-        <div><label>البداية</label><input type="datetime-local" id="start-${t.id}" value="${escHtml(t.start||'')}"></div>
-        <div><label>النهاية</label><input type="datetime-local" id="end-${t.id}" value="${escHtml(t.end||'')}"></div>
-      </div>
-      <div class="date-actions">
-        <button class="save-date-btn" onclick="_A.saveDates('${t.id}')">💾 حفظ الموعد</button>
-        ${clearBtn}${calBtns}
-      </div>
-    </div>
-    <div class="move-wrap" id="movewrap-${t.id}">
-      <span style="font-size:12px;color:var(--text-muted)">انقل إلى:</span>
-      <select class="move-select" onchange="_A.moveTask('${t.id}',this.value);this.parentElement.classList.remove('open')">
-        <option value="">— اختر —</option>${otherQs}
-      </select>
-    </div>
-  </div>
-</div>`;
-    }).join('');
-  });
-
-  // Scheduled section
-  const sched = tasks.filter(t=>t.start).sort((a,b)=>new Date(a.start)-new Date(b.start));
-  document.getElementById('scheduledSection').classList.toggle('has-tasks', sched.length>0);
-  document.getElementById('scheduledGrid').innerHTML = sched.map(t => {
-    const s = timeStatus(t.start);
-    const badge = s==='overdue'?'<span class="chip-badge">متأخرة!</span>':s==='urgent'?'<span class="chip-badge">قريب</span>':'';
-    return `<div class="scheduled-chip ${s==='urgent'||s==='overdue'?'urgent-soon':''}">
-      <span class="chip-name">${escHtml(t.name)}</span>
-      <span class="chip-time">${fmtDT(t.start)}</span>${badge}</div>`;
-  }).join('');
-
-  // Stats
-  const total=tasks.length, done=tasks.filter(t=>t.done).length;
-  document.getElementById('stat-total').textContent   = total;
-  document.getElementById('stat-done').textContent   = done;
-  document.getElementById('stat-pending').textContent= total-done;
-}
-
-setInterval(render, 60000);
-</script>
 </body>
 </html>
