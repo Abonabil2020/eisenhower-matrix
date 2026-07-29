@@ -218,17 +218,19 @@ import {
   addDoc, updateDoc, deleteDoc, doc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ── Firebase Init ─────────────────────────────────────────────
+// ── Firebase Init (المشروع الرئيسي الشغال: medical-dashboard) ─────────
 const app = initializeApp({
   apiKey: "AIzaSyCgh_WS2gwTJDoXuhYvLIyebRVtnutzbew",
-  authDomain: "task-manage-7a61c.firebaseapp.com",
-  projectId: "task-manage-7a61c",
-  storageBucket: "task-manage-7a61c.firebasestorage.app",
+  authDomain: "medical-dashboard-3b42e.firebaseapp.com",
+  projectId: "medical-dashboard-3b42e",
+  storageBucket: "medical-dashboard-3b42e.appspot.com",
   messagingSenderId: "929629061748",
   appId: "1:929629061748:web:fe724427edf47b6fd88721"
 });
+
 const db  = getFirestore(app);
-const col = collection(db, "tasks");
+// تم تخصيص اسم المجلد لـ eisenhower_tasks لعدم التداخل مع جدول المهام المشترك
+const col = collection(db, "eisenhower_tasks");
 
 // ── State ─────────────────────────────────────────────────────
 let tasks  = [];
@@ -253,7 +255,7 @@ onSnapshot(col, snap => {
 }, err => {
   console.error(err);
   document.getElementById('loadingOverlay').style.display = 'none';
-  setSyncStatus('error', '❌ تعذّر الاتصال — تحقق من الإنترنت');
+  setSyncStatus('error', '❌ تعذّر الاتصال — تحقق من إعدادات قاعدة البيانات');
 });
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -276,7 +278,7 @@ function timeStatus(start) {
 }
 async function patch(id, data) {
   setSyncStatus('','⏳ جاري الحفظ...');
-  await updateDoc(doc(db,'tasks',id), data);
+  await updateDoc(doc(db,'eisenhower_tasks',id), data);
 }
 function showToast(msg) {
   const c = document.getElementById('toastContainer');
@@ -302,7 +304,7 @@ const A = window._A = {
     if (t) patch(id, {done: !t.done});
   },
   async deleteTask(id) {
-    await deleteDoc(doc(db,'tasks',id));
+    await deleteDoc(doc(db,'eisenhower_tasks',id));
     showToast('🗑️ تم حذف المهمة');
   },
   startEdit(id) {
@@ -442,7 +444,7 @@ function render() {
 
   // Stats
   const total=tasks.length, done=tasks.filter(t=>t.done).length;
-  document.getElementById('stat-total').textContent  = total;
+  document.getElementById('stat-total').textContent   = total;
   document.getElementById('stat-done').textContent   = done;
   document.getElementById('stat-pending').textContent= total-done;
 }
